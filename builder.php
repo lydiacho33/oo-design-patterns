@@ -1,153 +1,186 @@
 <?php
 
-interface Pasta
+# https://refactoring.guru/design-patterns/builder 
+
+interface Builder
 {
-    public function boilPasta();
-    public function strainPasta();
-    public function heatPanWithIngredients();
-    public function addIngredients();
-    public function addPasta();
-    public function addToppings();
+    public function reset();
+    public function setSeats(int $num);
+    public function setEngine(Engine $engine);
+    public function setTripComputer();
+    public function setGPS();
 }
+interface Engine {}
 
-class WhitePasta implements Pasta
+class CarBuilder implements Builder
 {
-    public $cheese;
+    private Car $car;
 
-    public function __construct($cheese)
+    public function reset()
     {
-        $this->cheese = $cheese;
+        $this->car = new Car();
     }
-
-    public function boilPasta()
+    public function setSeats(int $number)
     {
-        print('add water to a pot' . PHP_EOL);
-        print('add salt to the water' . PHP_EOL);
-        print('bring water to boiling temperature' . PHP_EOL);
-        print('add pasta in the pot' . PHP_EOL);
+        $this->car->setSeats($number);
     }
-
-    public function strainPasta()
+    public function setEngine(Engine $engine)
     {
-        print('drain the pasta water with a strainer' . PHP_EOL);
-        print('keep some of the pasta water' . PHP_EOL);
+        $this->car->setEngine($engine);
     }
-
-    public function heatPanWithIngredients()
+    public function setTripComputer()
     {
-        print('heat a pan over medium heat' . PHP_EOL);
-        print('add olive oil' . PHP_EOL);
-        print('add garlic' . PHP_EOL);
-        print('stir until fragrant for 1-2 minutes' . PHP_EOL);
+        $this->car->setTripComputer();
     }
-
-    public function addIngredients()
+    public function setGPS()
     {
-        print('pour chicken broth in the pan' . PHP_EOL);
-        print('add salt and pepper' . PHP_EOL);
-        print('add cream' . PHP_EOL);
+        $this->car->setGPS();
     }
-
-    public function addPasta()
+    public function getResult()
     {
-        print('add some pasta water' . PHP_EOL);
-        print('add pasta into the pan' . PHP_EOL);
-    }
-
-    public function addToppings()
-    {
-        print('add parsley' . PHP_EOL);
-        print("add {$this->cheese}" . PHP_EOL);
+        return $this->car;
     }
 }
 
-class RedPasta implements Pasta
+class Car
 {
-    public $cheese;
+    private int $seats;
+    private ?Engine $engine = null;
+    private bool $tripComputer = false;
+    private bool $gps = false;
 
-    public function __construct($cheese)
+    public function setSeats(int $seats)
     {
-        $this->cheese = $cheese;
+        $this->seats = $seats;
     }
-
-    public function boilPasta()
+    public function setEngine(Engine $engine)
     {
-        print('add water to a pot' . PHP_EOL);
-        print('add salt to the water' . PHP_EOL);
-        print('bring water to boiling temperature' . PHP_EOL);
-        print('add pasta in the pot' . PHP_EOL);
+        $this->engine = $engine;
     }
-
-    public function strainPasta()
+    public function setTripComputer()
     {
-        print('drain the pasta water with a strainer' . PHP_EOL);
-        print('keep some of the pasta water' . PHP_EOL);
+        $this->tripComputer = true;
     }
-
-    public function heatPanWithIngredients()
+    public function setGPS()
     {
-        print('heat a pan over medium-high heat' . PHP_EOL);
-        print('add ground beef and cook until browned' . PHP_EOL);
-        print('add onions and stir' . PHP_EOL);
+        $this->gps = true;
     }
-
-    public function addIngredients()
+    public function showCar()
     {
-        print('add garlic' . PHP_EOL);
-        print('add tomato paste' . PHP_EOL);
-        print('add oregano' . PHP_EOL);
-        print('add pepper flakes' . PHP_EOL);
-        print('add pasta water' . PHP_EOL);
-        print('add salt and black pepper' . PHP_EOL);
-    }
-
-    public function addPasta()
-    {
-        print('add pasta into the pan' . PHP_EOL);
-    }
-
-    public function addToppings()
-    {
-        print('add basil' . PHP_EOL);
-        print("add {$this->cheese}" . PHP_EOL);
+        echo
+        "🚘 CAR" . "\n" .
+            "Seats: $this->seats, Engine: " . get_class($this->engine) .
+            ", Trip Computer: " . ($this->tripComputer ? "Yes" : "No") .
+            ", GPS: " . ($this->gps ? "Yes" : "No") . "\n";
     }
 }
 
-class Chef
+class CarManualBuilder implements Builder
 {
-    public function cookCreamPasta(WhitePasta $pasta)
-    {
-        $pasta->boilPasta();
-        $pasta->strainPasta();
-        $pasta->heatPanWithIngredients();
-        $pasta->addIngredients();
-        $pasta->addPasta();
-        $pasta->addToppings();
-    }
+    private Manual $manual;
 
-    public function cookSpaghetti(RedPasta $pasta)
+    public function reset()
     {
-        $pasta->boilPasta();
-        $pasta->strainPasta();
-        $pasta->heatPanWithIngredients();
-        $pasta->addIngredients();
-        $pasta->addPasta();
+        $this->manual = new Manual();
+    }
+    public function setSeats(int $number)
+    {
+        $this->manual->setSeats($number);
+    }
+    public function setEngine(Engine $engine)
+    {
+        $this->manual->setEngine($engine);
+    }
+    public function setTripComputer()
+    {
+        $this->manual->setTripComputer();
+    }
+    public function setGPS()
+    {
+        $this->manual->setGPS();
+    }
+    public function addTransmission()
+    {
+        $this->manual->addTransmission();
+    }
+    public function getResult()
+    {
+        return $this->manual;
     }
 }
 
-class Application
+class Manual
 {
-    public function makePasta()
+    private int $seats;
+    private ?Engine $engine = null;
+    private bool $tripComputer = false;
+    private bool $gps = false;
+
+    public function setSeats(int $seats)
     {
-        $chef = new Chef();
-
-        $redPasta = new RedPasta('parmesan');
-        $chef->cookSpaghetti($redPasta);
-
-        $whitePasta = new WhitePasta('pecorino');
-        $chef->cookCreamPasta($whitePasta);
+        $this->seats = $seats;
+    }
+    public function setEngine(Engine $engine)
+    {
+        $this->engine = $engine;
+    }
+    public function setTripComputer()
+    {
+        $this->tripComputer = true;
+    }
+    public function setGPS()
+    {
+        $this->gps = true;
+    }
+    public function addTransmission()
+    {
+        print('Add manual transmission');
+    }
+    public function showCar()
+    {
+        echo
+        "🏎️  Manual Car" . "\n" .
+            "Seats: $this->seats, Engine: " . get_class($this->engine) .
+            ", Trip Computer: " . ($this->tripComputer ? "Yes" : "No") .
+            ", GPS: " . ($this->gps ? "Yes" : "No") .
+            ", Transmission: " . ("added") . "\n";
     }
 }
 
-$cooking_class = new Application();
-$cooking_class->makePasta();
+class SportEngine implements Engine {}
+class SuvEngine implements Engine {}
+
+class Director
+{
+    public function makeSUV(Builder $builder)
+    {
+        $builder->reset();
+        $builder->setSeats(6);
+        $builder->setEngine(new SuvEngine);
+        $builder->setTripComputer();
+        $builder->setGPS();
+    }
+
+    public function makeSportsCar(Builder $builder)
+    {
+        $builder->reset();
+        $builder->setSeats(2);
+        $builder->setEngine(new SportEngine);
+        $builder->setTripComputer();
+        $builder->setGPS();
+    }
+}
+
+$client = new Director();
+
+// Build a SUV
+$carBuilder = new CarBuilder();
+$client->makeSUV($carBuilder);
+$suv = $carBuilder->getResult();
+$suv->showCar();
+
+// Build a sports car
+$carManualBuilder = new CarManualBuilder();
+$client->makeSportsCar($carManualBuilder);
+$sportsCar = $carManualBuilder->getResult();
+$sportsCar->showCar();

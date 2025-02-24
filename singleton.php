@@ -4,7 +4,7 @@
 
 class Singleton
 {
-    public static $foo = NULL;
+    private static $instance = NULL;
 
     protected function __construct()
     {
@@ -14,12 +14,14 @@ class Singleton
     static function create()
     {
 
-        if (!isset(self::$foo)) {
-            $foo = new static();
+        if (!isset(self::$instance)) {
+            self::$instance = new static();
         };
 
-        return $foo;
+        return self::$instance;
     }
 };
 
 Singleton::create();
+
+echo "Instance 1 Hash: " . spl_object_hash($instance1) . "\n";
